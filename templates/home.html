@@ -19,7 +19,7 @@
 		{% for item in items %}
 
 			<h2 class="brown">
-				<a class="no_link" href="/catalog/{{item.category_id}}/items/{{item.id}}">{{item.name}}</a> <span class="grey"><i><a class="no_link" href="/catalog/{{item.category_id}}">({{item.category.name}})</a></i></span>
+				<a class="no_link" href="/catalog/{{item.category.name}}/items/{{item.name}}">{{item.name}}</a> <span class="grey"><i><a class="no_link" href="/catalog/{{item.category.name}}">({{item.category.name}})</a></i></span>
 			</h2>
 		{% endfor %}		
 	</div>

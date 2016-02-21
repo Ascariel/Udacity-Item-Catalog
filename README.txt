@@ -1,4 +1,5 @@
-Place your catalog project in this directory.
+Pending:
 
-
-yes
+fix state protection
+fix comments
+fix readme

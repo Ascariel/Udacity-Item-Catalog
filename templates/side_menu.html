@@ -3,7 +3,6 @@
 	<h1 class="mrg_left_40"> 
 		<span class=""><a href="/" class="no_link">Categories</a>
 	 </h1>
-	<!-- <br> -->
 
 		{% if "email" in session %}
 			<h4 class="mrg_left_40  brown"><a class="no_link" href="/catalog/new">Add New Category</a></h4>
@@ -12,7 +11,7 @@
 
 	<ul class="txt_left ">
 		{% for c in categories %}
-		<p><strong><a href="/catalog/{{c.id}}" class="no_link">{{c.name}}</a></strong></p>
+		<p><strong><a href="/catalog/{{c.name}}" class="no_link">{{c.name}}</a></strong></p>
 
 		{% endfor %}
 	</ul>

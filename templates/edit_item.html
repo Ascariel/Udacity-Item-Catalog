@@ -12,7 +12,7 @@
 <h1>Edit Item ({{item.name}})</h1>
 
 
-<form action="/catalog/{{item.category.id}}/items/{{item.id}}/edit" method="POST">
+<form action="/catalog/{{item.category.name}}/items/{{item.name}}/edit" method="POST">
 	<label for="">New Name</label>
 	<input type="text" name="name" value="{{item.name}}">
 	<br><br>
@@ -23,6 +23,6 @@
 
 	<input type="submit" value="Confirm">
 	<br><br>
-	<span class="blue"><a href="/catalog/{{item.category.id}}" class="no_link">Back</a></span>
+	<span class="blue"><a href="/catalog/{{item.category.name}}" class="no_link">Back</a></span>
 </form>
 

@@ -14,16 +14,16 @@
 
 		{% if "email" in session %}
 			<h4 class="brown inline">
-				<a href="/catalog/{{category.id}}/items/new" class=" no_link">Add New Item</a>
+				<a href="/catalog/{{category.name}}/items/new" class=" no_link">Add New Item</a>
 			</h4>
 		{% endif %}
 
 		{% if "email" in session and category.user.email == session["email"] %}
 			<p class="inline"> | </p>
-			<h4 class="brown inline"><a href="/catalog/{{category.id}}/edit" class=" no_link">Edit Category</a></h4> 		
+			<h4 class="brown inline"><a href="/catalog/{{category.name}}/edit" class=" no_link">Edit Category</a></h4> 		
 			<p class="inline"> | </p>
 			<h4 class="brown inline">
-				<a href="/catalog/{{category.id}}/delete" class="no_link">Delete Category</a>
+				<a href="/catalog/{{category.name}}/delete" class="no_link">Delete Category</a>
 			</h4>	
 		{% endif %}
 	 
@@ -31,7 +31,7 @@
 		{% for item in items %}
 
 			<h2 class="brown">
-				<a class="no_link inline" href="/catalog/{{item.category_id}}/items/{{item.id}}">{{item.name}}
+				<a class="no_link inline" href="/catalog/{{item.category.name}}/items/{{item.name}}">{{item.name}}
 				</a>
 				<span class="small_text grey"> ({{item.user.email}})</span>
 				<!-- <h4 class="grey inline"><i></i></h4>  -->

@@ -11,7 +11,7 @@
 <h1>Add New Item to {{category.name}}</h1>
 
 
-<form action="/catalog/{{category.id}}/items/new" method="POST">
+<form action="/catalog/{{category.name}}/items/new" method="POST">
 	<label for="">Item Name</label>
 	<input type="text" name="name">
 	<br>
@@ -23,5 +23,5 @@
 
 	<input type="submit" value="Confirm">
 	<br><br>
-	<span class="blue"><a href="/catalog/{{category.id}}" class="no_link">Back</a></span>
+	<span class="blue"><a href="/catalog/{{category.name}}" class="no_link">Back</a></span>
 </form>

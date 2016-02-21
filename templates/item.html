@@ -14,11 +14,11 @@
 
 		{% if "email" in session and item.user.email == session["email"] %}
 			<h4 class="brown inline">
-				<a href="/catalog/{{item.category.id}}/items/{{item.id}}/edit" class="no_link">Edit Item</a>
+				<a href="/catalog/{{item.category.name}}/items/{{item.name}}/edit" class="no_link">Edit Item</a>
 			</h4>
 			<p class="inline"> | </p>
 			<h4 class="brown inline">
-				<a href="/catalog/{{item.category.id}}/items/{{item.id}}/delete" class="no_link">Delete Item</a>
+				<a href="/catalog/{{item.category.name}}/items/{{item.name}}/delete" class="no_link">Delete Item</a>
 			</h4>
 		{% endif %}
 
@@ -31,7 +31,7 @@
 				<h3 class="txt_justify">{{item.description}}</h3>				
 			</div>
 			<br>
-			<h3><span class="brown"><a href="/catalog/{{item.category.id}}" class="no_link">Back</a></span></h3>
+			<h3><span class="brown"><a href="/catalog/{{item.category.name}}" class="no_link">Back</a></span></h3>
 
 	</div>
 

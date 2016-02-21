@@ -25,7 +25,7 @@
       <li class="inline"  ><a class="link" href="#"> {{ session["email"] }} |</a></li>
       <li class="inline "><a href="javascript: logout()"> Logout</a></li>
     {% else %}
-      <li class="inline"  ><a class="link" href="javascript: check_login()"> Login </a></li>
+      <li class="inline"><a class="link" href="javascript: check_login()"> Login </a></li>
     {% endif %}		
 	</ul>
   {% if "email" in session %}
@@ -135,7 +135,7 @@
       console.log(response)
 
       setTimeout(function(){
-        window.location = ""
+        window.location = "/"
       }, 800)
     })
     .fail(function(response) {
