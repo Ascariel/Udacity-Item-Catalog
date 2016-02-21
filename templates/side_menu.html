@@ -1,0 +1,20 @@
+
+<div class="left side_menu txt_left black_border beige " > 
+	<h1 class="mrg_left_40"> 
+		<span class=""><a href="/" class="no_link">Categories</a>
+	 </h1>
+	<!-- <br> -->
+
+		{% if "email" in session %}
+			<h4 class="mrg_left_40  brown"><a class="no_link" href="/catalog/new">Add New Category</a></h4>
+			<br>
+		{% endif %}	
+
+	<ul class="txt_left ">
+		{% for c in categories %}
+		<p><strong><a href="/catalog/{{c.id}}" class="no_link">{{c.name}}</a></strong></p>
+
+		{% endfor %}
+	</ul>
+	<br><br>
+</div>

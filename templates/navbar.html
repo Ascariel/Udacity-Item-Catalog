@@ -1,0 +1,198 @@
+<!-- JQuery -->
+<script src="/static/jquery-2.2.0.min.js"></script> 
+
+<!-- Sweet Alert -->
+<script src="/static/sweetalert.min.js"></script> 
+<link rel="stylesheet" type="text/css" href="/static/sweetalert.css">
+
+
+
+<!-- Themes -->
+
+<!-- 
+<link rel="stylesheet" type="text/css" href="/static/facebook.css">
+<link rel="stylesheet" type="text/css" href="/static/twitter.css">
+<link rel="stylesheet" type="text/css" href="/static/google.css">
+ -->
+
+<link rel="stylesheet" href="/static/catalog.css">
+<!-- Navbar -->
+<div class="navbar black black_border txt_white">
+
+	<ul class="no_list_style right mrg_right_40" style="padding-left: 15px">
+		<!-- <li class="inline "><a href="/"> Home | </a></li> -->
+    {% if "email" in session %}
+      <li class="inline"  ><a class="link" href="#"> {{ session["email"] }} |</a></li>
+      <li class="inline "><a href="javascript: logout()"> Logout</a></li>
+    {% else %}
+      <li class="inline"  ><a class="link" href="javascript: check_login()"> Login </a></li>
+    {% endif %}		
+	</ul>
+  {% if "email" in session %}
+    <img class="inline right round" src="{{session['picture']}}" alt="">
+  {% endif %}
+
+	<ul class="no_list_style">
+		<li class="inline">
+			<a href="/">Home</a>
+		</li>
+	</ul>
+
+</div>
+
+
+
+
+
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '952064401543415',
+      xfbml      : true,
+      version    : 'v2.5',
+      status 		 : true,
+      cookie     : true
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+
+  function define_global_var(variable){
+  	window.global_var = variable
+  }
+
+  function check_login(){
+  	console.log("checking login")
+  	var status = FB.getLoginStatus(function(response){
+  		login_status = response
+
+  		if (response.status == "connected") {
+				try {
+	  			FB.login(function(response){
+	  				console.log(response)
+	  				swal("Already Logged In", "No need for more authentication :)")
+	  			}, {scope: 'public_profile, email'}, {auth_type: "rerequest"})
+				}
+				catch(error) {
+					console.log("Error rescued in Login")
+					console.log("Error: " + error)
+				}  			
+  		}
+  		else{
+  			console.log("User was not connected, starting login process")
+  			FB.login(function(response){
+
+          var status = response["status"]
+
+          if(status != "connected"){
+            console.log("Status not connected, aborting")
+            return;
+          }
+
+          swal("Login Succesful", "Welcome to our site!", "success")
+
+          console.log("Status is Connected, response:")
+          console.log(response)
+
+          var auth_response = response["authResponse"]
+
+          FB.api("/me?fields=email,name, picture", function(r){
+
+            auth_response["email"] = r["email"]
+            auth_response["name"] = r["name"]
+            auth_response["picture"] = r["picture"]["data"]["url"]
+            auth_response["state"] = "{{state}}"
+
+            // Extending Token, Logging In
+            send_facebook_token(auth_response)  
+
+
+          })          
+
+  			}, {scope: 'public_profile, email'})
+  		}
+  	})
+  }
+
+  function send_facebook_token(facebook_params){
+    console.log("Sending Server Log Ajax, params:")
+    console.log(facebook_params)
+
+    $.ajax({
+      url: '/login/log_user',
+      type: 'GET',
+      // type: 'POST',
+      data: facebook_params,
+    })
+    .done(function(response) {
+      console.log("Ajax success, response: ")
+      console.log(response)
+
+      setTimeout(function(){
+        window.location = ""
+      }, 800)
+    })
+    .fail(function(response) {
+      console.log("controller error");
+      console.log(response)
+    })
+    
+  }
+
+  function logout(){
+
+    FB.getLoginStatus(function(r){
+      console.log(r)
+
+      if (r["status"] == "connected") {
+        FB.logout(function(r){
+          console.log(r)
+          console.log("Logged out from FB API")
+        })
+      }
+
+      $.ajax({
+        url: '/user/logout',
+        type: 'POST',
+      })
+      .done(function(response) {
+        console.log("logout success");
+        swal("Logged Out", "Thanks for visiting, come again soon!", "success")
+        
+        setTimeout(function(){
+          window.location = "/"
+        }, 1000)        
+      })
+      .fail(function() {
+        console.log("error");
+      })      
+
+    })
+
+
+  }
+
+  function get_facebook_info(fields_string, callback){
+  	//Defaults field are:
+  	// Example: A string like "name,email,id"
+  	if(fields_string){
+  		requested_params = "?fields=" + fields_string
+  	}
+  	else{
+  		requested_params = "?fields=email,name,id"
+  	}
+  	console.log("requesting: " + requested_params)
+  	FB.api("/me" + requested_params, function(response){
+  		console.log(response)
+  		console.log(JSON.stringify(response));
+  	})
+  }
+
+
+</script>

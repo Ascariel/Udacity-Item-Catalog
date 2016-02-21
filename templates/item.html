@@ -1,0 +1,39 @@
+<!-- Navbar template -->
+{% include("navbar.html") %}
+<!-- Message Flashing -->
+{% include("flash_messages.html") %}
+<!-- Side menu template -->
+{% include("side_menu.html") %}
+
+<!-- Main Content -->
+<div class=" beige black_border right_container left">  
+	<div class="mrg_left_80">
+		<h1 class=""><b> {{item.name}}</b></h1>
+		<h4 class="grey"><i>Owner: ({{item.user.email}})</i></h4> 
+		<!-- <br> -->
+
+		{% if "email" in session and item.user.email == session["email"] %}
+			<h4 class="brown inline">
+				<a href="/catalog/{{item.category.id}}/items/{{item.id}}/edit" class="no_link">Edit Item</a>
+			</h4>
+			<p class="inline"> | </p>
+			<h4 class="brown inline">
+				<a href="/catalog/{{item.category.id}}/items/{{item.id}}/delete" class="no_link">Delete Item</a>
+			</h4>
+		{% endif %}
+
+
+
+			<h2 class="brown">
+				Item Description:
+			</h2>	
+			<div>
+				<h3 class="txt_justify">{{item.description}}</h3>				
+			</div>
+			<br>
+			<h3><span class="brown"><a href="/catalog/{{item.category.id}}" class="no_link">Back</a></span></h3>
+
+	</div>
+
+
+</div>

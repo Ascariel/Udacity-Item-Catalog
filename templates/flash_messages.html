@@ -1,0 +1,11 @@
+<!-- Message Flashing -->
+{% with messages = get_flashed_messages() %}
+	{% if (messages | count) > 0 %}
+		<ul>
+			{% for m in messages %}
+				<li>{{m}}</li>				
+			{% endfor %}		
+		</ul>
+
+	{% endif %}
+{% endwith %}

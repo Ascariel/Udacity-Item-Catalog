@@ -1,0 +1,23 @@
+
+
+<!-- Navbar template -->
+{% include("navbar.html") %}
+
+<!-- Navbar template -->
+{% include("flash_messages.html") %}
+
+
+
+
+<h1>Delete {{category.name}} Category, and all Items inside?</h1>
+
+
+<form action="/catalog/{{category.id}}/delete" method="POST">
+	<label for="">Are you sure?</label>
+	<!-- <input type="text" name="name"> -->
+
+	<input type="submit" value="Yes, Delete it">
+	<br><br>
+	<span class="blue"><a href="/catalog/{{category.id}}" class="no_link">Back</a></span>
+</form>
+

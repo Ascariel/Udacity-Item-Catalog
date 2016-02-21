@@ -1,0 +1,23 @@
+
+
+<!-- Navbar template -->
+{% include("navbar.html") %}
+
+<!-- Navbar template -->
+{% include("flash_messages.html") %}
+
+
+
+
+<h1>Edit Category ({{category.name}})</h1>
+
+
+<form action="/catalog/{{category.id}}/edit" method="POST">
+	<label for="">New Name</label>
+	<input type="text" name="name" placeholder="{{category.name}}">
+
+	<input type="submit" value="Confirm">
+	<br><br>
+	<span class="blue"><a href="/catalog/{{category.id}}" class="no_link">Back</a></span>
+</form>
+

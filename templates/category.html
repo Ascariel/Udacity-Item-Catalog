@@ -1,0 +1,48 @@
+<!-- Navbar template -->
+{% include("navbar.html") %}
+<!-- Message Flashing -->
+{% include("flash_messages.html") %}
+<!-- Side menu template -->
+{% include("side_menu.html") %}
+
+
+<!-- Main Content -->
+<div class=" beige black_border right_container left">  
+	<div class="mrg_left_80">
+		<h1 class=""><b> {{category.name}} ( {{items | count}} Items)</b></h3>
+		<h4 class="grey"><i>Category Owner: ({{category.user.email}})</i></h4>
+
+		{% if "email" in session %}
+			<h4 class="brown inline">
+				<a href="/catalog/{{category.id}}/items/new" class=" no_link">Add New Item</a>
+			</h4>
+		{% endif %}
+
+		{% if "email" in session and category.user.email == session["email"] %}
+			<p class="inline"> | </p>
+			<h4 class="brown inline"><a href="/catalog/{{category.id}}/edit" class=" no_link">Edit Category</a></h4> 		
+			<p class="inline"> | </p>
+			<h4 class="brown inline">
+				<a href="/catalog/{{category.id}}/delete" class="no_link">Delete Category</a>
+			</h4>	
+		{% endif %}
+	 
+		<br>
+		{% for item in items %}
+
+			<h2 class="brown">
+				<a class="no_link inline" href="/catalog/{{item.category_id}}/items/{{item.id}}">{{item.name}}
+				</a>
+				<span class="small_text grey"> ({{item.user.email}})</span>
+				<!-- <h4 class="grey inline"><i></i></h4>  -->
+			</h2>
+			
+		{% endfor %}		
+
+			<br>
+			<h3><span class="brown"><a href="/" class="no_link">Back</a></span></h3>
+
+	</div>
+
+</div>
+

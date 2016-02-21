@@ -1,0 +1,27 @@
+
+<!-- Navbar template -->
+{% include("navbar.html") %}
+
+<!-- Navbar template -->
+{% include("flash_messages.html") %}
+
+
+
+
+<h1>Add New Item to {{category.name}}</h1>
+
+
+<form action="/catalog/{{category.id}}/items/new" method="POST">
+	<label for="">Item Name</label>
+	<input type="text" name="name">
+	<br>
+
+	<label for="">Description</label>	
+	<br>
+	
+	<textarea  name="description" rows="8" cols= "60" ></textarea>	
+
+	<input type="submit" value="Confirm">
+	<br><br>
+	<span class="blue"><a href="/catalog/{{category.id}}" class="no_link">Back</a></span>
+</form>

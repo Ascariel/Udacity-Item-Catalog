@@ -1,0 +1,22 @@
+
+
+<!-- Navbar template -->
+{% include("navbar.html") %}
+
+<!-- Navbar template -->
+{% include("flash_messages.html") %}
+
+
+
+
+<h1>New Category</h1>
+
+
+<form action="/catalog/new" method="POST">
+	<label for="">Category Name</label>
+	<input type="text" name="name">
+	{# <br><br> #}
+	<input type="submit" value="Confirm">
+	<br><br>
+	<span class="blue"><a href="/" class="no_link">Back</a></span>
+</form>
