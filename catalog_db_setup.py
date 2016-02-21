@@ -129,30 +129,32 @@ def fill_db():
 
 	users = session.query(User).all() 
 
- 	movies = ["Deadpool", "Kunfu Panda 3", "Batman vs Superman", "The 5th Wave", "Zoolander 2", "Zootopia", "Finding Dory"]
- 	books = ["Red Rising", "Golden Son", "Morning Star", "The Final Empire", "Well of Ascension", "The Hero of Ages"]
+ 	movies = ["Deadpool", "Kunfu Panda 3", "Batman vs Superman", "The 5th Wave", \
+ 	"Zoolander 2", "Zootopia", "Finding Dory"]
+ 	books = ["Red Rising", "Golden Son", "Morning Star", "The Final Empire", \
+ 	"Well of Ascension", "The Hero of Ages"]
  	music = ["Coldplay", "Guns and Roses", "Stratovarius", "iron Maiden", "Soda Stereo"]
  	phones = ["Motorola", "Iphone", "Samsung", "Lumia"]
  	cars= ["Chevrolet", "Toyota", "Suzuki", "Mazda"]
  	bicycles = ["Trek", "GT", "Kanon", "Cannondale"]
  
- 	categories = [ ["Movies", movies], ["Books", books ], ["Music", music ], ["Phones", phones], ["Cars", cars ], ["Bicycles", bicycles] ]
+ 	categories = [ ["Movies", movies], ["Books", books ], ["Music", music ], ["Phones", phones],\
+ 	 ["Cars", cars ], ["Bicycles", bicycles] ]
 
 
 	 # Generating Categories
 	for i in categories:
 		# print("Creating Category {0}".format(i[0]))
 		user = random.choice(users)
-		print(user.email)
 		items = i[1]
-		c = Category(name= i[0], description = "Category Description Placeholder", user_id = user.id )
+		c = Category(name= i[0], description = "Category Description Placeholder",\
+		 user_id = user.id )
 		session.add(c)
 		session.commit()
 
 		for x in items:
 			u = random.choice(users)
 			item = Item(name= x, description = item_description, category_id = c.id, user_id = u.id  )
-			print(u.email)
 			session.add(item)
 			session.commit()
 			# print("Item Created {0}".format(item.name)) 			
@@ -165,9 +167,6 @@ clean()
 
 if db() <= 0:
 	fill_db()	
-	print("Filling DB")
+	print("Filled DB")
 
-
-# fill_db()
-# print(session.query(User).first().email)
 

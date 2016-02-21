@@ -52,7 +52,8 @@ def home():
 	login_session['state'] = state	
 
 
-	return render_template("home.html", items= items, categories = categories, login_session = login_session, state = state)
+	return render_template("home.html", items= items, categories = categories, \
+	 login_session = login_session, state = state)
 
 
 @app.route("/login/log_user/", methods=["POST", "GET"])
@@ -62,6 +63,8 @@ def log_user():
 
 	response = request.args
 
+
+
 	user_id = response["userID"]
 	email = response["email"]
 	picture = response["picture"]
@@ -69,6 +72,9 @@ def log_user():
 	token = response["accessToken"]
 	state = response["state"]
 	user = get_user_with_email(email)
+
+	if state != login_session["state"]:
+		return "Invalid state parameter"	
 
 	if user:
 		user.picture = picture
@@ -111,7 +117,8 @@ def category(category_name):
 	categories = session.query(Category).all()
 	items = category.items
 
-	return render_template("category.html", categories = categories, category = category, items = items)
+	return render_template("category.html", categories = categories, category = category, \
+	                       items = items)
 
 # One Item View
 @app.route("/catalog/<category_name>/items/<item_name>")
@@ -122,7 +129,8 @@ def item(category_name, item_name):
 	item = get_item_with_name(item_name)
 	category = item.category
 
-	return render_template("item.html", categories = categories, category = category, item = item)
+	return render_template("item.html", categories = categories, category = category, \
+	                       item = item)
 
 # Add Item
 @app.route("/catalog/<category_name>/items/new", methods = ["GET", "POST"])
@@ -143,7 +151,8 @@ def new_item(category_name):
 	flash(message)	
 
 	if valid:
-		item = Item(name = name, description = description, category_id = category.id, user_id = login_session["user_id"])
+		item = Item(name = name, description = description, category_id = category.id, \
+		            user_id = login_session["user_id"])
 		session.add(item)
 		session.commit()		
 		return redirect("/catalog/{0}".format(category.name))
@@ -265,16 +274,16 @@ def delete_category(category_name):
 	return redirect("/")
 
 # Starting API Endpoints
-@app.route("/category_request")
-def category_request():
+@app.route("/request_categories")
+def request_categories():
 	# Returns all categories in JSON format
 	categories = session.query(Category).all()
 	formatted_category_array = [c.serialize for c in categories]
 
 	return json.dumps(formatted_category_array)
 
-@app.route("/category/<category_name>/items")
-def category_items_request(category_name):
+@app.route("/category/<category_name>/request_items")
+def request_category_items(category_name):
 	category = get_category_with_name(category_name)
 
 	if category == None:
@@ -284,25 +293,6 @@ def category_items_request(category_name):
 	formatted_items_array = [i.serialize for i in items]
 
 	return json.dumps(formatted_items_array)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 	def create_user(name, email, picture):
@@ -315,10 +305,6 @@ def category_items_request(category_name):
 			session.commit()
 			return user
 
-
-
-
-
 # VALIDATION METHODS
 
 def validate_creation(record_type, name, optional_category_id = None):
@@ -327,7 +313,8 @@ def validate_creation(record_type, name, optional_category_id = None):
 	else:
 		if (optional_category_id == None): 
 			raise NameError, "Optional category_id was not given as argument, and was needed" 
-		record = session.query(Item).filter(Item.name.like(name)).filter(Item.category_id == optional_category_id).first()
+		record = session.query(Item).filter(Item.name.like(name)) \
+		.filter(Item.category_id == optional_category_id).first()
 
 	new_record = record == None
 	empty_name = len(name) == 0
@@ -354,7 +341,8 @@ def validate_edit(record_type, record, name):
 		print(name)
 		print("record.name:")
 		print(name, record.name)
-		available_name = session.query(Category).filter(Category.name.like(name)).filter(Category.id != record.id).count() == 0 or name == record.name
+		available_name = session.query(Category).filter(Category.name.like(name)) \
+		.filter(Category.id != record.id).count() == 0 or name == record.name
 	else:
 		# record = session.query(Item).filter(Item.name.like(name)).filter(Item.category_id == optional_category_id).first()
 		print(name)
@@ -362,7 +350,8 @@ def validate_edit(record_type, record, name):
 		print(name, record.name)
 
 		category = record.category
-		available_name = session.query(Item).filter(Item.name.like(name)).filter(Item.category_id == category.id).count() == 0 or name == record.name
+		available_name = session.query(Item).filter(Item.name.like(name)) \
+		.filter(Item.category_id == category.id).count() == 0 or name == record.name
 
 	
 	empty_name = len(name) == 0
@@ -381,17 +370,6 @@ def validate_edit(record_type, record, name):
 		print("Failed: Repeated {0}")
 		message =  "{0} Name {1} is already being used. Try another name".format(record_type, name)
 		return [False, message]
-
-
-
-
-
-
-
-
-
-
-
 
 
 

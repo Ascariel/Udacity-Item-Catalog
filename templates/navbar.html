@@ -73,16 +73,17 @@
   		login_status = response
 
   		if (response.status == "connected") {
-				try {
-	  			FB.login(function(response){
-	  				console.log(response)
-	  				swal("Already Logged In", "No need for more authentication :)")
-	  			}, {scope: 'public_profile, email'}, {auth_type: "rerequest"})
-				}
-				catch(error) {
-					console.log("Error rescued in Login")
-					console.log("Error: " + error)
-				}  			
+          var auth_response = response["authResponse"]
+          FB.api("/me?fields=email,name, picture", function(r){
+
+            auth_response["email"] = r["email"]
+            auth_response["name"] = r["name"]
+            auth_response["picture"] = r["picture"]["data"]["url"]
+            auth_response["state"] = "{{state}}"
+
+            // Extending Token, Logging In
+            send_facebook_token(auth_response)  
+          })    			
   		}
   		else{
   			console.log("User was not connected, starting login process")
