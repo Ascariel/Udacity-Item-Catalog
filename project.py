@@ -1,6 +1,7 @@
 
 from flask import Flask, render_template, url_for, request, redirect, flash, jsonify, json, session
 import random, string
+from functools import wraps
 from flask import session as login_session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -16,33 +17,51 @@ session = DBSession()
 # Convenience methods
 
 def get_category_with_name(category_name):
+	# Obtains category object from DB using its name for the query
 	category = session.query(Category).filter(Category.name == category_name).first()
 	return category
 
 def get_item_with_name(item_name):
+	# Obtains item object from DB using its name for the query
 	item = session.query(Item).filter(Item.name == item_name).first()
 	return item
 
 def get_category_with_id(category_id):
+	# Obtains category object from DB using its id for the query
 	category = session.query(Category).filter(Category.id == category_id).first()
 	return category
 
 def get_item_with_id(item_id):
+	# Obtains item object from DB using its name for the query
 	item = session.query(Item).filter(Item.id == item_id).first()
 	return item	
 
 def get_user_with_id(user_id):
+	# Obtains user object from DB using its id for the query
 	user = session.query(User).filter(User.id == user_id).first()
 	return user
 
 def get_user_with_email(email):
+	# Obtains category object from DB using its email for the query
 	user = session.query(User).filter(User.email == email).first()
 	return user	
+
+def login_required(f):
+	# Checks that the user is logged in. If it is, everything proceeds as it normally would
+  # If it isn't, it redirects to home with a login required flash message 
+	@wraps(f)
+	def decorated_function(*args, **kwargs):
+		if "email" not in login_session:
+			flash("You must first log in to access this section")
+			return redirect("/")
+		return f(*args, **kwargs)
+	return decorated_function	
 
 # Routing
 
 @app.route("/")
 def home():
+	# Shows the homepage for the catalog project, displaying all categories and latest items
 	categories = session.query(Category).order_by(Category.id.desc()).all()
 	items = session.query(Item).order_by(Item.id.desc()).limit(10)
 
@@ -60,10 +79,9 @@ def home():
 def log_user():
 	# Gets response info from facebook authentication, and creates a session object
 	# containing them, allowing to maintain login state through different views
+	# All info stored in the facebook response object is parsed and stored in the session_login
 
 	response = request.args
-
-
 
 	user_id = response["userID"]
 	email = response["email"]
@@ -98,7 +116,7 @@ def log_user():
 
 @app.route("/user/logout", methods=["POST", "GET"])
 def logout_user():
-	# Cleans login session to logout user
+	# Cleans login session info to logout user
 
 	login_session.pop("email")
 	login_session.pop("picture")
@@ -112,13 +130,14 @@ def logout_user():
 # One Category View
 @app.route("/catalog/<category_name>")
 def category(category_name):
+
 	# Shows info for one specific category
 	category = get_category_with_name(category_name)
 	categories = session.query(Category).all()
 	items = category.items
 
 	return render_template("category.html", categories = categories, category = category, \
-	                       items = items)
+												 items = items)
 
 # One Item View
 @app.route("/catalog/<category_name>/items/<item_name>")
@@ -130,11 +149,13 @@ def item(category_name, item_name):
 	category = item.category
 
 	return render_template("item.html", categories = categories, category = category, \
-	                       item = item)
+												 item = item)
 
 # Add Item
 @app.route("/catalog/<category_name>/items/new", methods = ["GET", "POST"])
+@login_required
 def new_item(category_name):
+	# Allows a logged in user to add a new item, with him as its owner
 	categories = session.query(Category).all()
 	category = get_category_with_name(category_name)
 	
@@ -152,7 +173,7 @@ def new_item(category_name):
 
 	if valid:
 		item = Item(name = name, description = description, category_id = category.id, \
-		            user_id = login_session["user_id"])
+								user_id = login_session["user_id"])
 		session.add(item)
 		session.commit()		
 		return redirect("/catalog/{0}".format(category.name))
@@ -161,7 +182,9 @@ def new_item(category_name):
 
 # Add Category
 @app.route("/catalog/new", methods = ["GET", "POST"])
+@login_required
 def new_category():
+	# Allows a logged in user to add a new category, with him as its owner
 	if request.method == "GET":
 		return render_template("add_category.html")
 
@@ -183,7 +206,9 @@ def new_category():
 
 
 @app.route("/catalog/<category_name>/edit", methods = ["GET", "POST"])
+@login_required
 def edit_category(category_name):
+	# Allowes logged user to edit a category they own
 	category = get_category_with_name(category_name)
 
 	if request.method == "GET":
@@ -206,7 +231,9 @@ def edit_category(category_name):
 		return render_template("edit_category.html", category = category)
 
 @app.route("/catalog/<category_name>/items/<item_name>/edit", methods = ["GET", "POST"])
+@login_required
 def edit_item(category_name, item_name):
+	# Allowes logged user to edit an item they own
 
 	item = get_item_with_name(item_name)
 	category = item.category
@@ -235,7 +262,9 @@ def edit_item(category_name, item_name):
 
 
 @app.route("/catalog/<category_name>/items/<item_name>/delete", methods = ["GET", "POST"])
+@login_required
 def delete_item(category_name, item_name):
+	# Allowes logged user to delete an item they own
 
 	item = get_item_with_name(item_name)
 	category = item.category
@@ -253,7 +282,9 @@ def delete_item(category_name, item_name):
 	return redirect("/catalog/{0}".format(category.name))
 
 @app.route("/catalog/<category_name>/delete", methods = ["GET", "POST"])
+@login_required
 def delete_category(category_name):
+	# Allowes logged user to delete a category they own
 
 	category =  get_category_with_name(category_name)
 	items = category.items
@@ -262,10 +293,6 @@ def delete_category(category_name):
 		return render_template("delete_category.html", category = category)
 
 	# Processing Post Request
-	for i in items:
-		print("Deleting " + i.name)
-		session.delete(i)
-		session.commit()
 
 	session.delete(category)
 	session.commit()
@@ -284,6 +311,7 @@ def request_categories():
 
 @app.route("/category/<category_name>/request_items")
 def request_category_items(category_name):
+	# Returns all items from a category in JSON format
 	category = get_category_with_name(category_name)
 
 	if category == None:
@@ -295,19 +323,27 @@ def request_category_items(category_name):
 	return json.dumps(formatted_items_array)
 
 
-	def create_user(name, email, picture):
-		if(get_user_with_email(email)):
-			print("Email already in use")
-			return False
-		else:
-			user = User(name=name, email = email, picture = picture)
-			session.add(user)
-			session.commit()
-			return user
+def create_user(name, email, picture):
+	# Creates a new user
+	if(get_user_with_email(email)):
+		print("Email already in use")
+		return False
+	else:
+		user = User(name=name, email = email, picture = picture)
+		session.add(user)
+		session.commit()
+		return user
 
 # VALIDATION METHODS
 
 def validate_creation(record_type, name, optional_category_id = None):
+	# Takes a record_type parameter, which determines if the validations performed will be for 
+	# item or category. 
+	# For Categories, it checks that the name issued doesn't already exist
+	# For items, it checks that the item name doesnt already exist in the same category
+	# For both, it checks that the new name used in creation is not empty
+	# If availabe name and not empty name pass, return true and appropiate message
+	# Else returns false, with another message
 	if record_type == "Category":
 		record = session.query(Category).filter(Category.name.like(name)).first()
 	else:
@@ -335,6 +371,15 @@ def validate_creation(record_type, name, optional_category_id = None):
 		return [False, message]
 	
 def validate_edit(record_type, record, name):
+	# Takes a record_type parameter, which determines if the validations performed will be for 
+	# item or category. 
+	# For Categories, it checks that the name issued doesn't already exist in a different category
+	# For items, it checks that the item name doesnt already exist in the same category
+	# For both, it checks that the new name used in creation is not empty
+	# If availabe name and not empty name pass, return true and appropiate message
+	# Else returns false, with another message	
+	# The record param contains the object currently being updated(category or item)
+	
 	if record_type == "Category":
 		# record = session.query(Category).filter(Category.id == record.id).first()
 		# name = record.name

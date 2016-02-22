@@ -78,8 +78,8 @@ class Item(Base):
 			"user_id": self.user_id
 		}  	
 
-User.categories = (relationship("Category", backref="users"))
-Category.items = (relationship("Item", backref = "categories"))
+User.categories = (relationship("Category", backref="users", cascade="all, delete-orphan", single_parent=True))
+Category.items = (relationship("Item", backref = "categories", cascade="all, delete-orphan", single_parent=True))
 Base.metadata.create_all(engine)
 
 def db():
